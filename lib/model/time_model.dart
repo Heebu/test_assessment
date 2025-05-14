@@ -30,7 +30,6 @@ class TimeModel {
     );
   }
 
-  /// Optional: factory to accept Firebase Timestamp
   factory TimeModel.fromTimestamp(dynamic timestamp) {
     final DateTime dateTime = timestamp.toDate(); // Assuming Firestore Timestamp
     return TimeModel.fromDateTime(dateTime);
