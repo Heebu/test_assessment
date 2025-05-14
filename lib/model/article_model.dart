@@ -9,7 +9,7 @@ class ArticleModel {
   final bool isPinned;
   final bool isDeleted;
   final String userId;
-  final List<String> tags;
+  final String tags;
 
 
   ArticleModel({
@@ -21,7 +21,7 @@ class ArticleModel {
     required this.isPinned,
     required this.isDeleted,
     required this.userId,
-    this.tags = const [],
+    required this.tags,
   });
 
   factory ArticleModel.fromMap(Map<String, dynamic> data) {
@@ -34,7 +34,7 @@ class ArticleModel {
       isPinned: data['isPinned'],
       isDeleted: data['isDeleted'],
       userId: data['userId'],
-      tags: List<String>.from(data['tags'] ?? []),
+      tags: data['tags']
     );
   }
 

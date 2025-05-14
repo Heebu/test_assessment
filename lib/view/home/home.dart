@@ -1,8 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:stacked/stacked.dart';
+import 'package:test_assessment/model/article_model.dart';
 import '../../utils/all_categories.dart';
+import '../post/edit_screen_view.dart';
 import '../shared/preview_cards.dart';
 import 'home_viewmodel.dart';
 
@@ -12,6 +15,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder.reactive(
+      onDispose: (viewModel) => viewModel.allArticles,
       viewModelBuilder: () => HomeViewModel(),
       builder: (context, viewModel, child) {
         return Scaffold(
@@ -132,21 +136,25 @@ class HomeScreen extends StatelessWidget {
               ),
 
               Expanded(
-                child: Container(
-                  child: GridView.builder(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                    ),
-                    itemBuilder: (context, index) {
-                      return NotesContainer();
-                    },
+                child: GridView.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
                   ),
+                  itemCount: viewModel.filterArticles.length,
+                  itemBuilder: (context, index) {
+                    
+                    return NotesContainer(articleModel: viewModel.filterArticles[index],);
+                  },
                 ),
               ),
             ],
           ),
           floatingActionButton: FloatingActionButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) =>
+                  EditingPage(articleModel: ArticleModel(id: 'id', title: '', content: '',
+                      timeCreated: Timestamp.now(), lastEdit: Timestamp.now(), isPinned: false, isDeleted: false, userId: 'userId', tags: 'Important'),),));
+            },
             child: Icon(Icons.add),
           ),
         );

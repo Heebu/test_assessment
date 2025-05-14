@@ -1,12 +1,13 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
+import 'package:test_assessment/model/article_model.dart';
 import '../../utils/random_colors.dart';
 import '../post/edit_screen_view.dart';
 
 class NotesContainer extends StatelessWidget {
-  NotesContainer({super.key});
+  NotesContainer({super.key, required this.articleModel});
+  final ArticleModel articleModel;
 
   final Random random = Random();
 
@@ -18,7 +19,7 @@ class NotesContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) => EditingPage(),));
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => EditingPage(articleModel: articleModel,),));
       },
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: 5.w, vertical: 5.h),
@@ -34,15 +35,15 @@ class NotesContainer extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Hello World',
+                  articleModel.title,
                   style: Theme.of(
                     context,
                   ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
-                IconButton(onPressed: () {}, icon: Icon(Icons.push_pin)),
+                articleModel.isPinned?  IconButton(onPressed: () {}, icon: Icon( Icons.push_pin )): SizedBox.shrink(),
               ],
             ),
-            Text('Hello World'),
+            Text(articleModel.content),
           ],
         ),
       ),

@@ -1,9 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:stacked/stacked.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 
 
 class PostViewModel extends BaseViewModel{
   final quill.QuillController controller = quill.QuillController.basic();
+  TextEditingController headerController = TextEditingController();
 
   bool moreEditingOptions = true;
 
@@ -37,6 +39,8 @@ class PostViewModel extends BaseViewModel{
     notifyListeners();
   }
 
-
+initClass(title, content){
+     headerController = 'jfj' as TextEditingController;
+}
 
 }

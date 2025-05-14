@@ -6,10 +6,12 @@ import 'package:stacked/stacked.dart';
 import 'package:test_assessment/view/post/post_viewmodel.dart';
 import 'package:test_assessment/view/shared/snack_bar.dart';
 
+import '../../model/article_model.dart';
 import '../../utils/download_doc.dart';
 
 class EditingPage extends StatelessWidget {
-  const EditingPage({super.key});
+  const EditingPage({super.key, required this.articleModel});
+  final ArticleModel articleModel;
 
   @override
   Widget build(BuildContext context) {
