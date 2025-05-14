@@ -1,12 +1,9 @@
-import 'dart:math';
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:stacked/stacked.dart';
-
-import '../../utils/random_colors.dart';
+import '../../utils/all_categories.dart';
+import '../shared/preview_cards.dart';
 import 'home_viewmodel.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -62,10 +59,10 @@ class HomeScreen extends StatelessWidget {
                           vertical: 12,
                         ),
                         decoration: BoxDecoration(
-                          color: isPicked ? Colors.brown : Colors.white,
+                          color: isPicked ? Colors.black : Colors.white,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: isPicked ? Colors.white : Colors.brown,
+                            color: isPicked ? Colors.white : Colors.black,
                           ),
                         ),
                         child: Column(
@@ -96,29 +93,34 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
 
-
               SizedBox(
-                height: 50,
+                height: 70,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  itemCount: viewModel.daysInMonth.length,
+                  itemCount: allCategories.length,
                   itemBuilder: (context, index) {
+                    String category = allCategories[index];
+                    bool isPicked = viewModel.categoryPicked == category;
 
                     return GestureDetector(
                       onTap: () {
+                        viewModel.onPickedCat(category);
                       },
                       child: Container(
-                       
-                        padding: EdgeInsets.symmetric(vertical: 10),
+                        padding: EdgeInsets.symmetric(vertical: 5, horizontal: 20.w),
                         margin: const EdgeInsets.symmetric(
                           horizontal: 6,
                           vertical: 12,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: isPicked? Colors.black : Colors.white,
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: Colors.brown,
+                          border: Border.all(color: Colors.black),
+                        ),
+                        child: Center(
+                          child: Text(
+                            category,
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: isPicked? Colors.white: Colors.black),
                           ),
                         ),
 
@@ -141,7 +143,6 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
               ),
-
             ],
           ),
           floatingActionButton: FloatingActionButton(
@@ -154,39 +155,3 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class NotesContainer extends StatelessWidget {
-   NotesContainer({
-    super.key,
-  });
-
-  final Random random = Random();
-
-  Color getRandomCoolColor() {
-    return coolColors[random.nextInt(coolColors.length)];
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 5.w, vertical: 5.h),
-      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
-      decoration: BoxDecoration(
-        color: getRandomCoolColor(),
-        borderRadius: BorderRadius.circular(10.r)
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('Hello World', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),),
-              IconButton(onPressed: (){}, icon: Icon(Icons.favorite))
-            ],
-          ),
-          Text('Hello World'),
-        ],
-      ),
-    );
-  }
-}

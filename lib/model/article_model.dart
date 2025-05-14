@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ArticleModel {
-  final String? id;
+  final String id;
   final String title;
   final String content;
   final Timestamp timeCreated;
@@ -13,7 +13,7 @@ class ArticleModel {
 
 
   ArticleModel({
-    this.id,
+    required this.id,
     required this.title,
     required this.content,
     required this.timeCreated,
@@ -24,9 +24,9 @@ class ArticleModel {
     this.tags = const [],
   });
 
-  factory ArticleModel.fromMap(Map<String, dynamic> data, String docId) {
+  factory ArticleModel.fromMap(Map<String, dynamic> data) {
     return ArticleModel(
-      id: docId,
+      id: data['id'],
       title: data['title'],
       content: data['content'],
       timeCreated: data['timeCreated'],

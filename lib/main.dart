@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:test_assessment/view/auth/splash_screen.dart';
-
+import 'package:flutter_quill/flutter_quill.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import '../../utils/themes.dart';
 import 'firebase_options.dart';
 
@@ -49,6 +50,12 @@ class _NotesAppState extends State<NotesApp> {
         builder: (BuildContext context, Widget? child) {
           ScreenUtil.init(context);
           return MaterialApp(
+            localizationsDelegates: const [
+              GlobalMaterialLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              FlutterQuillLocalizations.delegate,
+            ],
             title: 'Notes App',
             themeMode: _themeMode,
             theme: AppTheme.lightTheme,
