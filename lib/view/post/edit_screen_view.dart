@@ -16,7 +16,7 @@ class EditingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder.reactive(
-      viewModelBuilder: () => PostViewModel(),
+      viewModelBuilder: () => PostViewModel(articleModel.content),
       builder: (context, viewModel, child) {
 
         return Scaffold(
@@ -24,7 +24,7 @@ class EditingPage extends StatelessWidget {
             title: Container(
               padding: EdgeInsets.symmetric(vertical: 10.h),
               child: TextField(
-                decoration: InputDecoration(hintText: 'Untitled', border: InputBorder.none),
+                decoration: InputDecoration(hintText: articleModel.title, border: InputBorder.none),
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -38,20 +38,42 @@ class EditingPage extends StatelessWidget {
                 },
                 icon: Icon(Icons.drive_folder_upload_outlined),
               ),
-              IconButton(onPressed: () {}, icon: Icon(Icons.push_pin)),
+              IconButton(onPressed: () {}, icon: Icon(articleModel.isPinned? Icons.push_pin: Icons.push_pin_outlined)),
               IconButton(onPressed: () {
                 generateAndSharePdf(viewModel.controller, "my_note");
               }, icon: Icon(Icons.ios_share)),
-              IconButton(onPressed: () {
-                viewModel.onMoreEditingOptions();
-              }, icon: Icon(viewModel.moreEditingOptions? Icons.more_vert :Icons.more_horiz_outlined)),
+              IconButton(onPressed: () async{
+                showModalBottomSheet(context: context, builder: (context) {
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+
+                    ],
+                  );
+                },);
+
+
+                // if(articleModel.tags == ''){
+                // } else{
+                //  String result = await viewModel.updateArticle(articleId: articleModel.id, oldTitle: articleModel.title, oldCategory: articleModel.tags);
+                //  if(result == 'success'){
+                //    showSnackBar(context, 'Note Saved');
+                //    Navigator.of(context).pop();
+                //  }
+                //  else{
+                //    showSnackBar(context, result);
+                //  }
+                // }
+
+              }, icon: Icon(Icons.cloud_upload_rounded)),
             ],
           ),
           body: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
+            padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 10.h),
             child: Stack(
               children: [
                 Container(
+                  padding: EdgeInsets.symmetric(horizontal: 5.w),
                   height: double.maxFinite,
                   child: QuillEditor.basic(
                     controller: viewModel.controller,
@@ -150,6 +172,11 @@ class EditingPage extends StatelessWidget {
                           },
                           icon: const Icon(Icons.format_align_justify, color: Colors.white60),
                         ),
+
+                        IconButton(onPressed: () {
+                          viewModel.onMoreEditingOptions();
+                        }, icon: Icon(viewModel.moreEditingOptions? Icons.arrow_forward_ios :Icons.arrow_back_ios)),
+
                       ],
                     ),
                   ): Container(
@@ -171,7 +198,6 @@ class EditingPage extends StatelessWidget {
               ],
             )
           ),
-          floatingActionButton: FloatingActionButton(onPressed: (){}, child: Icon(Icons.cloud_upload_rounded),),
         );
       },
     );

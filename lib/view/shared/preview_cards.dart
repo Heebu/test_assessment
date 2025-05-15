@@ -17,6 +17,9 @@ class NotesContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    String headline = articleModel.title.length<10? articleModel.title: articleModel.title.replaceRange(9, articleModel.title.length, '..');
+    String contentPreview = articleModel.content.length<150? articleModel.content: articleModel.content.replaceRange(149, articleModel.content.length, '..');
     return GestureDetector(
       onTap: () {
         Navigator.of(context).push(MaterialPageRoute(builder: (context) => EditingPage(articleModel: articleModel,),));
@@ -35,7 +38,7 @@ class NotesContainer extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  articleModel.title,
+                  headline,
                   style: Theme.of(
                     context,
                   ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
@@ -43,7 +46,7 @@ class NotesContainer extends StatelessWidget {
                 articleModel.isPinned?  IconButton(onPressed: () {}, icon: Icon( Icons.push_pin )): SizedBox.shrink(),
               ],
             ),
-            Text(articleModel.content),
+            Text(contentPreview),
           ],
         ),
       ),

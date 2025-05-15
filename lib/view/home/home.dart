@@ -1,11 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:stacked/stacked.dart';
-import 'package:test_assessment/model/article_model.dart';
+import '../../model/article_model.dart';
 import '../../utils/all_categories.dart';
-import '../post/edit_screen_view.dart';
 import '../shared/preview_cards.dart';
 import 'home_viewmodel.dart';
 
@@ -136,25 +134,57 @@ class HomeScreen extends StatelessWidget {
               ),
 
               Expanded(
-                child: GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                  ),
-                  itemCount: viewModel.filterArticles.length,
-                  itemBuilder: (context, index) {
-                    
-                    return NotesContainer(articleModel: viewModel.filterArticles[index],);
+                child: StreamBuilder<List<ArticleModel>>(
+                  stream: viewModel.articlesStream,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    }
+
+                    final articles = snapshot.data ?? [];
+
+                    if (articles.isEmpty) {
+                      return const Center(child: Text('No articles available'));
+                    }
+
+                    return GridView.builder(
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                      ),
+                      itemCount: articles.length,
+                      itemBuilder: (context, index) {
+                        return NotesContainer(articleModel: articles[index]);
+                      },
+                    );
                   },
                 ),
               ),
+
             ],
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) =>
-                  EditingPage(articleModel: ArticleModel(id: 'id', title: '', content: '',
-                      timeCreated: Timestamp.now(), lastEdit: Timestamp.now(), isPinned: false, isDeleted: false, userId: 'userId', tags: 'Important'),),));
-            },
+              showAdaptiveDialog(context: context, builder: (context) {
+                return AlertDialog(
+                  title: Text('Add a new note'),
+                  content: Column(
+                    children: [
+                      TextField(
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: 'Title',
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },);
+
+              },
             child: Icon(Icons.add),
           ),
         );

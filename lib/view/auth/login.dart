@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stacked/stacked.dart';
 import '../home/home.dart';
 import 'auth_viewmodel.dart';
@@ -36,9 +37,92 @@ class LoginView extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Sign in with Google to continue',
+                      'Login to continue',
                       style: Theme.of(context).textTheme.bodyMedium,
                       textAlign: TextAlign.center,
+                    ),
+
+                    const SizedBox(height: 8),
+                    Container(
+                      height: 150,
+                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                      decoration: BoxDecoration(
+                        color: Colors.brown.shade50,
+                        borderRadius: BorderRadius.circular(10.r)
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white60,
+                              borderRadius: BorderRadius.circular(10.r),
+                            ),
+                            padding: EdgeInsets.symmetric(horizontal: 10.w),
+                            child: TextField(
+                              controller: viewModel.emailController,
+                              decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                hintText: 'Email',
+                              ),
+                              keyboardType: TextInputType.emailAddress,
+
+                            ),
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white60,
+                              borderRadius: BorderRadius.circular(10.r),
+                            ),
+                            padding: EdgeInsets.symmetric(horizontal: 10.w),
+                            child: TextField(
+                              controller: viewModel.passwordController,
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: 'password',
+                              ),
+                              keyboardType: TextInputType.visiblePassword,
+                              obscureText: true,
+
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        icon: const Icon(Icons.login),
+                        label: const Text("Login"),
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          backgroundColor: Colors.brown,
+                          foregroundColor: Colors.white,
+                          textStyle: const TextStyle(fontSize: 16),
+                        ),
+                        onPressed: () async {
+                          await viewModel.signInEmail();
+
+                          if (viewModel.isLoggedIn) {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => HomeScreen(
+                                ),
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text("Sign-in failed")),
+                            );
+                          }
+                        },
+                      ),
                     ),
                     const Spacer(),
                     SizedBox(
@@ -51,8 +135,8 @@ class LoginView extends StatelessWidget {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          backgroundColor: Colors.deepPurpleAccent,
-                          foregroundColor: Colors.white,
+
+                          foregroundColor: Colors.black,
                           textStyle: const TextStyle(fontSize: 16),
                         ),
                         onPressed: () async {

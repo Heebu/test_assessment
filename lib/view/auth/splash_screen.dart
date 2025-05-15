@@ -53,8 +53,8 @@ class SplashView extends StatelessWidget {
             // User is logged in, navigate to the Home screen
           } else {
             // User is not logged in, navigate to the Sign In screen
-            // return const LoginView();
-            return const HomeScreen();
+            return const LoginView();
+            // return const HomeScreen();
 
           }
         }

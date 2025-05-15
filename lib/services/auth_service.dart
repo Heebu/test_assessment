@@ -5,6 +5,19 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
+  Future<User?> signInEmail(String email, String password) async {
+    try {
+      final userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
+
+      print('Email sign-in success');
+      return userCredential.user;
+    } catch (e) {
+      print('Email Sign-In failed: $e');
+      return null;
+    }
+  }
+
   Future<User?> signInWithGoogle() async {
     try {
       final googleUser = await _googleSignIn.signIn();

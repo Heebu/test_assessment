@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../services/auth_service.dart';
@@ -5,6 +6,8 @@ import '../../services/auth_service.dart';
 
 class AuthViewModel extends BaseViewModel {
   User? currentUser;
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -16,6 +19,12 @@ class AuthViewModel extends BaseViewModel {
   Future<void> signInWithGoogle() async {
     setBusy(true);
     currentUser = await AuthService().signInWithGoogle();
+    setBusy(false);
+  }
+
+  Future<void> signInEmail() async {
+    setBusy(true);
+    currentUser = await AuthService().signInEmail(emailController.text.trim(), passwordController.text.trim());
     setBusy(false);
   }
 
