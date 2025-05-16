@@ -48,7 +48,7 @@ class HomeViewModel extends BaseViewModel {
 
   Stream<List<ArticleModel>> get articlesStream {
     return userPath
-        .orderBy('lastEdit', descending: true)
+        .orderBy('lastEdit', descending: true).orderBy('isPinned', descending: true)
         .snapshots()
         .map((snapshot) =>
         snapshot.docs.map((doc) => ArticleModel.fromMap(doc.data())).toList());

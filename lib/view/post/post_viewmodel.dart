@@ -11,16 +11,22 @@ class PostViewModel extends BaseViewModel{
   final notePath = FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).collection('notes');
   TextEditingController headerController = TextEditingController();
   String category = '';
+  bool isPinned = false;
+  bool moreEditingOptions = true;
+  bool isBold = false;
+  bool isItalic = false;
+  bool isUnderLine = false;
 
   late final quill.QuillController controller;
 
-  PostViewModel(String? initialContentJson) {
+  PostViewModel(String? initialContentJson, bool? isPin) {
     _initializeEditor(initialContentJson);
+    isPinned = isPin!;
+    notifyListeners();
   }
 
-  //final contentJson = jsonEncode(controller.document.toDelta().toJson());
-
   void _initializeEditor(String? content) {
+
     try {
       final doc = quill.Document.fromJson(jsonDecode(content!));
       controller = quill.QuillController(
@@ -28,7 +34,7 @@ class PostViewModel extends BaseViewModel{
         selection: const TextSelection.collapsed(offset: 0),
       );
     } catch (_) {
-      // Fallback to plain string if it's not JSON
+
       final doc = quill.Document()..insert(0, content ?? '');
       controller = quill.QuillController(
         document: doc,
@@ -37,14 +43,27 @@ class PostViewModel extends BaseViewModel{
     }
   }
 
-  bool moreEditingOptions = true;
 
-   bool isBold = false;
-   bool isItalic = false;
-   bool isUnderLine = false;
+   void onPinning(articleId) async{
+     isPinned = !isPinned;
+     notifyListeners();
+
+     await notePath
+         .doc(articleId)
+         .update({
+       'isPinned': isPinned,
+     });
+
+   }
+
 
    onMoreEditingOptions(){
      moreEditingOptions = !moreEditingOptions;
+     notifyListeners();
+   }
+
+   void onSelectCat(pickedCat) {
+     category = pickedCat;
      notifyListeners();
    }
 
@@ -73,7 +92,8 @@ class PostViewModel extends BaseViewModel{
     required String articleId,
     required String oldTitle,
     required String oldCategory,
-  }) async {
+  })
+  async {
      String result = 'an error occurred';
 
     try {
@@ -83,7 +103,7 @@ class PostViewModel extends BaseViewModel{
           .doc(articleId)
           .update({
         'title': headerController.text.isNotEmpty? headerController.text: oldTitle,
-        'category': oldCategory != category? category: oldCategory,
+        'tags': oldCategory != category? category: oldCategory,
         'content': jsonContent,
         'lastEdit': FieldValue.serverTimestamp(),
       });
@@ -95,5 +115,26 @@ class PostViewModel extends BaseViewModel{
     }
     return result;
   }
+
+
+  Future<String> deleteArticle({
+    required String articleId,
+  })
+  async {
+    String result = 'an error occurred';
+
+    try {
+      await notePath
+          .doc(articleId)
+          .delete();
+
+      result = 'success';
+    } catch (e) {
+      result = 'Error deleting article: $e';
+      rethrow;
+    }
+    return result;
+  }
+
 
 }

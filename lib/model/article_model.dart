@@ -3,14 +3,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class ArticleModel {
   final String id;
   final String title;
-  final String content;
+  final List<dynamic> content;
   final Timestamp timeCreated;
   final Timestamp lastEdit;
   final bool isPinned;
   final bool isDeleted;
   final String userId;
   final String tags;
-
 
   ArticleModel({
     required this.id,
@@ -29,12 +28,12 @@ class ArticleModel {
       id: data['id'],
       title: data['title'],
       content: data['content'],
-      timeCreated: data['timeCreated'],
-      lastEdit: data['lastEdit'],
+      timeCreated: data['timeCreated'] ?? Timestamp.now(),
+      lastEdit: data['lastEdit'] ?? Timestamp.now(),
       isPinned: data['isPinned'],
       isDeleted: data['isDeleted'],
       userId: data['userId'],
-      tags: data['tags']
+      tags: data['tags'],
     );
   }
 
@@ -50,6 +49,4 @@ class ArticleModel {
       'tags': tags,
     };
   }
-
-
 }
