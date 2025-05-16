@@ -7,6 +7,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import '../../utils/themes.dart';
 import 'firebase_options.dart';
 
+final themeNotifier = ValueNotifier<ThemeMode>(ThemeMode.system);
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,46 +27,41 @@ class NotesApp extends StatefulWidget {
 
 class _NotesAppState extends State<NotesApp> {
 
-   ThemeMode _themeMode = ThemeMode.system;
-
-  // void _toggleTheme(bool isDark) {
-  //   setState(() {
-  //     _themeMode = isDark ? ThemeMode.dark : ThemeMode.light;
-  //   });
-  // }
-
-
   @override
-  Widget build(BuildContext context) {
+   Widget build(BuildContext context) {
+     return GestureDetector(
+       behavior: HitTestBehavior.opaque,
+       onTap: () {
+         FocusManager.instance.primaryFocus?.unfocus();
+       },
+       child: ValueListenableBuilder<ThemeMode>(
+         valueListenable: themeNotifier,
+         builder: (context, mode, _) {
+           return ScreenUtilInit(
+             designSize: const Size(450.0, 700.0),
+             minTextAdapt: true,
+             splitScreenMode: true,
+             builder: (BuildContext context, Widget? child) {
+               ScreenUtil.init(context);
+               return MaterialApp(
+                 localizationsDelegates: const [
+                   GlobalMaterialLocalizations.delegate,
+                   GlobalCupertinoLocalizations.delegate,
+                   GlobalWidgetsLocalizations.delegate,
+                   FlutterQuillLocalizations.delegate,
+                 ],
+                 title: 'Notes App',
+                 themeMode: mode,
+                 theme: AppTheme.lightTheme,
+                 darkTheme: AppTheme.darkTheme,
+                 debugShowCheckedModeBanner: false,
+                 home: const SplashView(),
+               );
+             },
+           );
+         },
+       ),
+     );
+   }
 
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () {
-        FocusManager.instance.primaryFocus?.unfocus();
-      },
-      child: ScreenUtilInit(
-        designSize: const Size(450.0, 700.0),
-        minTextAdapt: true,
-        splitScreenMode: true,
-        builder: (BuildContext context, Widget? child) {
-          ScreenUtil.init(context);
-          return MaterialApp(
-            localizationsDelegates: const [
-              GlobalMaterialLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              FlutterQuillLocalizations.delegate,
-            ],
-            title: 'Notes App',
-            themeMode: _themeMode,
-            theme: AppTheme.lightTheme,
-            darkTheme: AppTheme.darkTheme,
-            debugShowCheckedModeBanner: false,
-            home: const
-            SplashView(),
-          );
-        },
-      ),
-    );
-  }
 }

@@ -24,6 +24,7 @@ class NotesContainer extends StatelessWidget {
   Widget build(BuildContext context) {
 
     String headline = articleModel.title.length<10? articleModel.title: articleModel.title.replaceRange(9, articleModel.title.length, '..');
+
     final plainText = extractPlainText(articleModel.content);
     final contentPreview = plainText.length < 70
         ? plainText
@@ -55,9 +56,11 @@ class NotesContainer extends StatelessWidget {
                 articleModel.isPinned?  IconButton(onPressed: () {}, icon: Icon( Icons.push_pin )): SizedBox.shrink(),
               ],
             ),
-            Text(contentPreview, style: Theme.of(
-              context,
-            ).textTheme.bodyMedium,),
+            Expanded(
+              child: Text(contentPreview, style: Theme.of(
+                context,
+              ).textTheme.bodyMedium,),
+            ),
             Row(
               children: [
                 Text(DateFormat('dd MMM yyyy').format(articleModel.lastEdit.toDate()),),
