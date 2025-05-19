@@ -5,91 +5,99 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:share_plus/share_plus.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/foundation.dart';
 
-Future<String> saveQuillContentAsPdf(quill.QuillController controller, String fileName) async {
- String responds = 'an unexpected error occurred';
-  try {
-    // Request storage permission
-    final status = await Permission.storage.request();
-    if (!status.isGranted) {
-      responds = 'Storage permission denied';
-      throw Exception("Storage permission denied");
+Future<bool> requestStoragePermission() async {
+  if (!kIsWeb && Platform.isAndroid) {
+    final androidInfo = await DeviceInfoPlugin().androidInfo;
+    final sdkInt = androidInfo.version.sdkInt;
+
+    if (sdkInt >= 30) {
+      final status = await Permission.manageExternalStorage.request();
+      return status.isGranted;
+    } else {
+      final status = await Permission.storage.request();
+      return status.isGranted;
     }
-
-    // Get the text from the controller
-    final plainText = controller.document.toPlainText();
-
-    // Create a PDF document
-    final pdf = pw.Document();
-
-    pdf.addPage(
-      pw.Page(
-        pageFormat: PdfPageFormat.a4,
-        build: (context) {
-          return pw.Container(
-            padding: const pw.EdgeInsets.all(24),
-            child: pw.Text(
-              plainText,
-              style: pw.TextStyle(fontSize: 14),
-            ),
-          );
-        },
-      ),
-    );
-
-    // Save the file to the device
-    final dir = await getExternalStorageDirectory(); // On Android: /storage/emulated/0/Android/data/<package>/files
-    final path = '${dir!.path}/$fileName.pdf';
-    final file = File(path);
-    await file.writeAsBytes(await pdf.save());
-
-    responds = 'PDF saved to: $path';
-    print('PDF saved to: $path');
-  } catch (e) {
-    responds = 'Error saving PDF: $e';
-    print('Error saving PDF: $e');
+  } else if (!kIsWeb && Platform.isIOS) {
+    // iOS doesn't need manual permission for app's sandbox
+    return true;
   }
-
-  return responds;
+  return false;
 }
 
-
-
-Future<void> generateAndSharePdf(quill.QuillController controller, String fileName) async {
+/// Save Quill content as PDF and return file path
+Future<String> saveQuillContentAsPdf(
+    quill.QuillController controller,
+    String baseFileName,
+    ) async {
+  String response = 'An unexpected error occurred';
   try {
-    // Request permission (Android)
-    final status = await Permission.storage.request();
-    if (!status.isGranted) throw Exception("Storage permission denied");
+    final hasPermission = await requestStoragePermission();
+    if (!hasPermission) throw Exception("Storage permission denied");
 
-    // Create the PDF
-    final pdf = pw.Document();
     final plainText = controller.document.toPlainText();
 
+    final pdf = pw.Document();
     pdf.addPage(
       pw.Page(
         pageFormat: PdfPageFormat.a4,
-        build: (context) {
-          return pw.Container(
-            padding: const pw.EdgeInsets.all(24),
-            child: pw.Text(
-              plainText,
-              style: pw.TextStyle(fontSize: 14),
-            ),
-          );
-        },
+        build: (context) => pw.Container(
+          padding: const pw.EdgeInsets.all(24),
+          child: pw.Text(plainText, style: pw.TextStyle(fontSize: 14)),
+        ),
       ),
     );
 
-    // Save the file locally
-    final dir = await getTemporaryDirectory(); // use temp directory for share
-    final filePath = '${dir.path}/$fileName.pdf';
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final fileName = '$baseFileName-$timestamp.pdf';
+
+    final dir = await getExternalStorageDirectory();
+    final filePath = '${dir!.path}/$fileName';
     final file = File(filePath);
     await file.writeAsBytes(await pdf.save());
 
-    // Share the file
-    await Share.shareXFiles([XFile(filePath)], text: fileName);
-
+    debugPrint('PDF saved to: $filePath');
+    return 'PDF saved to: $filePath';
   } catch (e) {
-    print('Error generating/sharing PDF: $e');
+    debugPrint('Error saving PDF: $e');
+    return 'Error saving PDF: $e';
+  }
+}
+
+/// Generate and share the Quill content as a PDF
+Future<void> generateAndSharePdf(
+    quill.QuillController controller,
+    String baseFileName,
+    ) async {
+  try {
+    final hasPermission = await requestStoragePermission();
+    if (!hasPermission) throw Exception("Storage permission denied");
+
+    final plainText = controller.document.toPlainText();
+    final pdf = pw.Document();
+
+    pdf.addPage(
+      pw.Page(
+        pageFormat: PdfPageFormat.a4,
+        build: (context) => pw.Container(
+          padding: const pw.EdgeInsets.all(24),
+          child: pw.Text(plainText, style: pw.TextStyle(fontSize: 14)),
+        ),
+      ),
+    );
+
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final fileName = '$baseFileName-$timestamp.pdf';
+
+    final tempDir = await getTemporaryDirectory();
+    final filePath = '${tempDir.path}/$fileName';
+    final file = File(filePath);
+    await file.writeAsBytes(await pdf.save());
+
+    await Share.shareXFiles([XFile(filePath)], text: 'Here is your note!');
+  } catch (e) {
+    debugPrint('Error generating/sharing PDF: $e');
   }
 }

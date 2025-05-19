@@ -9,7 +9,6 @@ import '../../model/article_model.dart';
 import '../../utils/all_categories.dart';
 import '../../utils/date_convert.dart';
 import '../../utils/plain_text.dart';
-import '../post/edit_screen_view.dart';
 import '../shared/preview_cards.dart';
 import 'home_viewmodel.dart';
 
@@ -260,9 +259,7 @@ class HomeScreen extends StatelessWidget {
                         String itemId = uuid.v7();
                         String result = await viewModel.createNote(itemId);
                         if(result == 'success') {
-                         ArticleModel articleModel =  await viewModel.fetchArticleById(itemId);
                          Navigator.pop(context);
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => EditingPage(articleModel: articleModel,),));
                         };
                       }, child: viewModel.isCreating? CircularProgressIndicator() :Text('Create'))
                     ],

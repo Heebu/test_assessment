@@ -50,7 +50,7 @@ class _NotesAppState extends State<NotesApp> {
                    GlobalWidgetsLocalizations.delegate,
                    FlutterQuillLocalizations.delegate,
                  ],
-                 title: 'Notes App',
+                 title: 'Flutter Note App',
                  themeMode: mode,
                  theme: AppTheme.lightTheme,
                  darkTheme: AppTheme.darkTheme,
